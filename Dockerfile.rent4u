@@ -1,0 +1,23 @@
+FROM amazonlinux:latest
+
+RUN yum update -y && \
+  yum install -y httpd && \
+  yum install wget -y && \
+  yum install unzip -y && \
+  yum install aws-cli -y
+
+RUN cd /var/www/html
+
+ENV S3_BUCKET_URL=https://s3.amazonaws.com/dev-oct-2k24-nv/rent4u.zip
+
+RUN wget $S3_BUCKET_URL
+
+RUN unzip rent4u.zip
+
+RUN cp -r rent4u-html/* /var/www/html/
+
+RUN rm -rf rent4u-html rent4u.zip
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/sbin/httpd", "-D", "FOREGROUND"]
